@@ -14,7 +14,8 @@ var driver_peer_id : int = -1 :
 
 var passenger_peer_id : int = -1
 
-var _steer_cur : float = 0.0
+var _steer_cur   : float      = 0.0
+var _seat_models : Dictionary = {}   # peer_id -> MeshInstance3D sitting model
 
 # ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -180,6 +181,30 @@ func _input(event: InputEvent) -> void:
 			deg_to_rad(-25.0), deg_to_rad(20.0)
 		)
 
+# ── Sitting model helpers ─────────────────────────────────────────────────
+
+func _add_sitting_model(peer_id: int, seat: int) -> void:
+	if _seat_models.has(peer_id):
+		return
+	var packed := load("res://VoidPlayerSitting.glb") as PackedScene
+	if packed == null:
+		return
+	var model : Node3D = packed.instantiate()
+	# Match the scale and facing used by the standing player body.
+	model.scale = Vector3(0.423, 0.423, 0.423)
+	model.rotation_degrees = Vector3(0, 180, 0)
+	var seat_node : Node3D = $SeatDriver if seat == 0 else $SeatPassenger
+	seat_node.add_child(model)
+	_seat_models[peer_id] = model
+
+func _remove_sitting_model(peer_id: int) -> void:
+	if not _seat_models.has(peer_id):
+		return
+	var model = _seat_models[peer_id]
+	if is_instance_valid(model):
+		model.queue_free()
+	_seat_models.erase(peer_id)
+
 # ── Flip / unstuck ────────────────────────────────────────────────────────
 
 func flip_upright() -> void:
@@ -213,12 +238,11 @@ func request_enter(seat: int) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func _on_enter(peer_id: int, seat: int) -> void:
-	# Update seat occupancy on every peer simultaneously.
-	# The setter triggers _update_authority() locally on each peer.
 	if seat == 0:
 		driver_peer_id = peer_id
 	else:
 		passenger_peer_id = peer_id
+	_add_sitting_model(peer_id, seat)
 	var p := _get_player(peer_id)
 	if p and p.has_method("enter_vehicle"):
 		p.enter_vehicle(self, seat)
@@ -246,11 +270,11 @@ func request_exit() -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func _on_exit(peer_id: int, seat: int) -> void:
-	# Clear seat on every peer simultaneously.
 	if seat == 0:
 		driver_peer_id = -1
 	else:
 		passenger_peer_id = -1
+	_remove_sitting_model(peer_id)
 	var p := _get_player(peer_id)
 	if p and p.has_method("exit_vehicle"):
 		p.exit_vehicle(self)
