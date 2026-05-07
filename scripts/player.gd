@@ -35,7 +35,8 @@ const ZOOM_FOV   := 30.0
 @onready var reload_label    : Label            = $HUD/Control/ReloadLabel
 @onready var hint_label      : Label            = $HUD/Control/HintLabel
 @onready var pause_menu      : Node             = $PauseMenu
-@onready var body_visual     : Node3D           = $Body
+@onready var body_visual     : Node3D           = $BodyPivot
+@onready var remote_pivot    : Node3D           = $RemotePivot
 @onready var hotbar          : Node             = $HUD/Control/Hotbar
 @onready var radial_menu     : Node             = $BuildMenuCanvas/RadialMenu
 @onready var health_fill     : ColorRect        = $HUD/Control/HealthBar/Fill
@@ -103,6 +104,7 @@ func _ready() -> void:
 	_on_health_changed(health, MAX_HEALTH)
 
 func _setup_local() -> void:
+	remote_pivot.visible = false
 	camera.current = true
 	hud_layer.visible = true
 	build_canvas.visible = true
@@ -136,6 +138,8 @@ func _setup_remote() -> void:
 	gun.visible = false
 	hammer.visible = false
 	pickaxe.visible = false
+	body_visual.visible = false
+	remote_pivot.visible = true
 	# Disable physics-driven input; remote position is driven by the synchronizer.
 	set_physics_process(true)   # still need to mirror body rotation
 	set_process_input(false)
@@ -270,7 +274,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	# Remote players: just mirror body rotation to head, sync drives position.
 	if not is_local():
-		body_visual.rotation.y = head.rotation.y
+		remote_pivot.rotation.y = head.rotation.y
 		return
 
 	_update_stance(Input.is_action_pressed("sneak"))

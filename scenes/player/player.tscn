@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/ghost_placer.gd" id="2_ghost"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/hotbar.gd" id="6_hotbar"]
 [ext_resource type="PackedScene" path="res://scenes/player/hammer.tscn" id="7_hammer"]
 [ext_resource type="PackedScene" path="res://scenes/player/pickaxe.tscn" id="8_pickaxe"]
+[ext_resource type="PackedScene" uid="uid://86m2yeywcbpn" path="res://VoidBody.glb" id="9_voidbody"]
+[ext_resource type="PackedScene" uid="uid://ci37jww6ijrb7" path="res://VoidPlayer.glb" id="10_voidplayer"]
 
 [sub_resource type="SceneReplicationConfig" id="SyncCfg_player"]
 properties/0/path = NodePath(".:position")
@@ -30,30 +32,6 @@ height = 1.8
 [sub_resource type="BoxMesh" id="GhostBox_1"]
 size = Vector3(1, 1, 1)
 
-[sub_resource type="StandardMaterial3D" id="Mat_suit"]
-albedo_color = Color(0.78, 0.80, 0.84, 1)
-metallic = 0.15
-roughness = 0.6
-
-[sub_resource type="StandardMaterial3D" id="Mat_visor_dark"]
-albedo_color = Color(0.10, 0.12, 0.14, 1)
-metallic = 0.3
-roughness = 0.4
-
-[sub_resource type="BoxMesh" id="Mesh_torso"]
-size = Vector3(0.42, 0.58, 0.25)
-
-[sub_resource type="BoxMesh" id="Mesh_pelvis"]
-size = Vector3(0.38, 0.16, 0.24)
-
-[sub_resource type="BoxMesh" id="Mesh_leg"]
-size = Vector3(0.15, 0.70, 0.20)
-
-[sub_resource type="BoxMesh" id="Mesh_pack"]
-size = Vector3(0.32, 0.40, 0.14)
-
-[sub_resource type="BoxMesh" id="Mesh_arm"]
-size = Vector3(0.12, 0.50, 0.16)
 
 ; ── Player root ──────────────────────────────────────────────────────────────
 [node name="Player" type="CharacterBody3D"]
@@ -63,43 +41,20 @@ script = ExtResource("1_player")
 position = Vector3(0, 0.9, 0)
 shape = SubResource("Cap_1")
 
-; ── Visible body model (low-poly spacesuit) ────────────────────────────────
-[node name="Body" type="Node3D" parent="."]
+; ── Visible body model (local player — no head) ──────────────────────────
+[node name="BodyPivot" type="Node3D" parent="."]
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(0.423, 0.423, 0.423)
 
-[node name="Torso" type="MeshInstance3D" parent="Body"]
-position = Vector3(0, 1.10, 0)
-mesh = SubResource("Mesh_torso")
-surface_material_override/0 = SubResource("Mat_suit")
+[node name="Body" parent="BodyPivot" instance=ExtResource("9_voidbody")]
 
-[node name="Pelvis" type="MeshInstance3D" parent="Body"]
-position = Vector3(0, 0.78, 0)
-mesh = SubResource("Mesh_pelvis")
-surface_material_override/0 = SubResource("Mat_suit")
+; ── Full model for remote players ─────────────────────────────────────────
+[node name="RemotePivot" type="Node3D" parent="."]
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(0.423, 0.423, 0.423)
+visible = false
 
-[node name="LegL" type="MeshInstance3D" parent="Body"]
-position = Vector3(-0.10, 0.35, 0)
-mesh = SubResource("Mesh_leg")
-surface_material_override/0 = SubResource("Mat_suit")
-
-[node name="LegR" type="MeshInstance3D" parent="Body"]
-position = Vector3(0.10, 0.35, 0)
-mesh = SubResource("Mesh_leg")
-surface_material_override/0 = SubResource("Mat_suit")
-
-[node name="ArmL" type="MeshInstance3D" parent="Body"]
-position = Vector3(-0.27, 1.10, 0)
-mesh = SubResource("Mesh_arm")
-surface_material_override/0 = SubResource("Mat_suit")
-
-[node name="ArmR" type="MeshInstance3D" parent="Body"]
-position = Vector3(0.27, 1.10, 0)
-mesh = SubResource("Mesh_arm")
-surface_material_override/0 = SubResource("Mat_suit")
-
-[node name="Backpack" type="MeshInstance3D" parent="Body"]
-position = Vector3(0, 1.16, 0.18)
-mesh = SubResource("Mesh_pack")
-surface_material_override/0 = SubResource("Mat_visor_dark")
+[node name="RemoteBody" parent="RemotePivot" instance=ExtResource("10_voidplayer")]
 
 ; ── Head / Camera ────────────────────────────────────────────────────────────
 [node name="Head" type="Node3D" parent="."]
