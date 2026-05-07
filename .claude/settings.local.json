@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(ConvertTo-Json)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(xargs grep -l \"door.*10\\\\|craft.*door\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\" -Recurse -File)",
+      "Bash(Sort-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\" -Recurse -Filter \"*.glb\" -ErrorAction SilentlyContinue)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\\\\assets\")",
+      "Bash(Select-Object FullName, Extension)"
+    ]
+  }
+}

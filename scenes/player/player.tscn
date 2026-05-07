@@ -1,0 +1,295 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/ghost_placer.gd" id="2_ghost"]
+[ext_resource type="Script" path="res://scripts/radial_menu.gd" id="3_radial"]
+[ext_resource type="PackedScene" path="res://scenes/player/gun.tscn" id="4_gun"]
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="5_pause"]
+[ext_resource type="Script" path="res://scripts/hotbar.gd" id="6_hotbar"]
+[ext_resource type="PackedScene" path="res://scenes/player/hammer.tscn" id="7_hammer"]
+[ext_resource type="PackedScene" path="res://scenes/player/pickaxe.tscn" id="8_pickaxe"]
+
+[sub_resource type="SceneReplicationConfig" id="SyncCfg_player"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("Head:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:health")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+
+[sub_resource type="CapsuleShape3D" id="Cap_1"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="BoxMesh" id="GhostBox_1"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_suit"]
+albedo_color = Color(0.78, 0.80, 0.84, 1)
+metallic = 0.15
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_visor_dark"]
+albedo_color = Color(0.10, 0.12, 0.14, 1)
+metallic = 0.3
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="Mesh_torso"]
+size = Vector3(0.42, 0.58, 0.25)
+
+[sub_resource type="BoxMesh" id="Mesh_pelvis"]
+size = Vector3(0.38, 0.16, 0.24)
+
+[sub_resource type="BoxMesh" id="Mesh_leg"]
+size = Vector3(0.15, 0.70, 0.20)
+
+[sub_resource type="BoxMesh" id="Mesh_pack"]
+size = Vector3(0.32, 0.40, 0.14)
+
+[sub_resource type="BoxMesh" id="Mesh_arm"]
+size = Vector3(0.12, 0.50, 0.16)
+
+; ── Player root ──────────────────────────────────────────────────────────────
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("Cap_1")
+
+; ── Visible body model (low-poly spacesuit) ────────────────────────────────
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Torso" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 1.10, 0)
+mesh = SubResource("Mesh_torso")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="Pelvis" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 0.78, 0)
+mesh = SubResource("Mesh_pelvis")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="LegL" type="MeshInstance3D" parent="Body"]
+position = Vector3(-0.10, 0.35, 0)
+mesh = SubResource("Mesh_leg")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="LegR" type="MeshInstance3D" parent="Body"]
+position = Vector3(0.10, 0.35, 0)
+mesh = SubResource("Mesh_leg")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="ArmL" type="MeshInstance3D" parent="Body"]
+position = Vector3(-0.27, 1.10, 0)
+mesh = SubResource("Mesh_arm")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="ArmR" type="MeshInstance3D" parent="Body"]
+position = Vector3(0.27, 1.10, 0)
+mesh = SubResource("Mesh_arm")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="Backpack" type="MeshInstance3D" parent="Body"]
+position = Vector3(0, 1.16, 0.18)
+mesh = SubResource("Mesh_pack")
+surface_material_override/0 = SubResource("Mat_visor_dark")
+
+; ── Head / Camera ────────────────────────────────────────────────────────────
+[node name="Head" type="Node3D" parent="."]
+position = Vector3(0, 1.65, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+far = 12000.0
+
+; Raycast: 50 m, layers 1 (terrain/rocks/buildings)
+[node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D"]
+enabled = true
+target_position = Vector3(0, 0, -10000)
+collision_mask = 3
+
+; Gun viewmodel — offset right/down in camera space
+[node name="Gun" parent="Head/Camera3D" instance=ExtResource("4_gun")]
+position = Vector3(0.17, -0.13, -0.35)
+
+[node name="Hammer" parent="Head/Camera3D" instance=ExtResource("7_hammer")]
+position = Vector3(0.17, -0.13, -0.35)
+visible = false
+
+[node name="Pickaxe" parent="Head/Camera3D" instance=ExtResource("8_pickaxe")]
+position = Vector3(0.17, -0.13, -0.35)
+visible = false
+
+; ── Ghost placement preview ──────────────────────────────────────────────────
+[node name="GhostPlacer" type="Node3D" parent="."]
+visible = false
+script = ExtResource("2_ghost")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GhostPlacer"]
+mesh = SubResource("GhostBox_1")
+
+; ── HUD overlay ──────────────────────────────────────────────────────────────
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="Control" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Crosshair" type="Label" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -16.0
+offset_right = 14.0
+offset_bottom = 16.0
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 24
+
+; Top-of-screen control hint
+[node name="HintLabel" type="Label" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_top = 10.0
+offset_bottom = 32.0
+text = "1-6 hotbar  ·  Q build menu  ·  Tab inventory  ·  LMB fire  ·  R reload  ·  ESC menu"
+horizontal_alignment = 1
+
+; Ammo counter, sits above the hotbar
+[node name="AmmoLabel" type="Label" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -150.0
+offset_right = -20.0
+offset_bottom = -120.0
+text = "30  |  120"
+horizontal_alignment = 2
+
+[node name="ReloadLabel" type="Label" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -90.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 52.0
+text = "RELOADING..."
+visible = false
+horizontal_alignment = 1
+
+; ── Health bar (above hotbar, bottom-centre) ──────────────────────────────
+[node name="HealthBar" type="Control" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -225.0
+offset_top = -140.0
+offset_right = 225.0
+offset_bottom = -116.0
+mouse_filter = 2
+
+[node name="BG" type="ColorRect" parent="HUD/Control/HealthBar"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.08, 0.08, 0.08, 0.86)
+
+[node name="Fill" type="ColorRect" parent="HUD/Control/HealthBar"]
+layout_mode = 0
+offset_right = 450.0
+offset_bottom = 24.0
+color = Color(0.88, 0.88, 0.88, 1)
+
+[node name="Label" type="Label" parent="HUD/Control/HealthBar"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1.0)
+
+; ── Interact prompt (centred near crosshair when looking at something usable)
+[node name="InteractPrompt" type="Label" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = 50.0
+offset_right = 120.0
+offset_bottom = 72.0
+text = ""
+horizontal_alignment = 1
+visible = false
+
+; ── Pickup notification (briefly shown when looting/mining) ────────────────
+[node name="PickupLabel" type="Label" parent="HUD/Control"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -200.0
+offset_right = 180.0
+offset_bottom = -178.0
+text = ""
+horizontal_alignment = 1
+visible = false
+
+; Hotbar / inventory UI — script builds children procedurally
+[node name="Hotbar" type="Control" parent="HUD/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("6_hotbar")
+
+; ── Radial build menu (opened by Q while holding the Build Hammer) ──────────
+[node name="BuildMenuCanvas" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="RadialMenu" type="Control" parent="BuildMenuCanvas"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("3_radial")
+
+; ── Pause / escape menu ──────────────────────────────────────────────────────
+[node name="PauseMenu" type="CanvasLayer" parent="."]
+layer = 10
+process_mode = 3
+script = ExtResource("5_pause")
+
+; ── Multiplayer sync ─────────────────────────────────────────────────────────
+[node name="Sync" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SyncCfg_player")

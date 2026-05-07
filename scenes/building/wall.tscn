@@ -1,0 +1,59 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/building_piece.gd" id="1_bp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(4, 3, 0.25)
+
+[sub_resource type="BoxMesh" id="Mesh_panel"]
+size = Vector3(4, 3, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="Mat_panel"]
+albedo_color = Color(0.55, 0.57, 0.62, 1)
+metallic = 0.55
+roughness = 0.40
+
+[sub_resource type="StandardMaterial3D" id="Mat_trim"]
+albedo_color = Color(0.25, 0.27, 0.30, 1)
+metallic = 0.65
+roughness = 0.30
+
+[sub_resource type="BoxMesh" id="Mesh_trim_h"]
+size = Vector3(4.0, 0.18, 0.30)
+
+[sub_resource type="BoxMesh" id="Mesh_rib"]
+size = Vector3(0.10, 2.7, 0.30)
+
+[node name="Wall" type="StaticBody3D"]
+script = ExtResource("1_bp")
+piece_type = "Wall"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_1")
+
+[node name="Panel" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_panel")
+surface_material_override/0 = SubResource("Mat_panel")
+
+; Top + bottom horizontal trim — slightly thicker than the panel so it casts a
+; shadow line for definition
+[node name="TopTrim" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.41, 0)
+mesh = SubResource("Mesh_trim_h")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="BottomTrim" type="MeshInstance3D" parent="."]
+position = Vector3(0, -1.41, 0)
+mesh = SubResource("Mesh_trim_h")
+surface_material_override/0 = SubResource("Mat_trim")
+
+; Vertical ribs splitting the panel into thirds
+[node name="RibL" type="MeshInstance3D" parent="."]
+position = Vector3(-1.33, 0, 0)
+mesh = SubResource("Mesh_rib")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="RibR" type="MeshInstance3D" parent="."]
+position = Vector3(1.33, 0, 0)
+mesh = SubResource("Mesh_rib")
+surface_material_override/0 = SubResource("Mat_trim")

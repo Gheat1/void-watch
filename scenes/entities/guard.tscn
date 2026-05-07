@@ -1,0 +1,87 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/guard.gd" id="1_guard"]
+
+[sub_resource type="CapsuleShape3D" id="Cap"]
+radius = 0.4
+height = 1.85
+
+[sub_resource type="BoxMesh" id="Mesh_legs"]
+size = Vector3(0.55, 0.95, 0.40)
+
+[sub_resource type="BoxMesh" id="Mesh_torso"]
+size = Vector3(0.62, 0.55, 0.42)
+
+[sub_resource type="BoxMesh" id="Mesh_head"]
+size = Vector3(0.42, 0.42, 0.42)
+
+[sub_resource type="SphereMesh" id="Mesh_eye"]
+radius = 0.06
+height = 0.12
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereMesh" id="Mesh_flash"]
+radius = 0.10
+height = 0.20
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="Mat_armor"]
+albedo_color = Color(0.45, 0.10, 0.10, 1)
+metallic = 0.45
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="Mat_dark"]
+albedo_color = Color(0.10, 0.10, 0.12, 1)
+metallic = 0.55
+roughness = 0.30
+
+[sub_resource type="StandardMaterial3D" id="Mat_eye"]
+albedo_color = Color(1.0, 0.20, 0.20, 1)
+emission_enabled = true
+emission = Color(1.0, 0.20, 0.20, 1)
+emission_energy_multiplier = 5.0
+shading_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="Mat_flash"]
+albedo_color = Color(1.0, 0.85, 0.40, 1)
+emission_enabled = true
+emission = Color(1.0, 0.55, 0.18, 1)
+emission_energy_multiplier = 6.0
+shading_mode = 0
+
+[node name="Guard" type="StaticBody3D"]
+script = ExtResource("1_guard")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.92, 0)
+shape = SubResource("Cap")
+
+[node name="Legs" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.475, 0)
+mesh = SubResource("Mesh_legs")
+surface_material_override/0 = SubResource("Mat_dark")
+
+[node name="Torso" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.18, 0)
+mesh = SubResource("Mesh_torso")
+surface_material_override/0 = SubResource("Mat_armor")
+
+[node name="Head" type="Node3D" parent="."]
+position = Vector3(0, 1.58, 0)
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Head"]
+mesh = SubResource("Mesh_head")
+surface_material_override/0 = SubResource("Mat_dark")
+
+[node name="Eye" type="MeshInstance3D" parent="Head"]
+position = Vector3(0, 0.02, -0.22)
+mesh = SubResource("Mesh_eye")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="MuzzleFlash" type="MeshInstance3D" parent="Head"]
+position = Vector3(0, -0.05, -0.45)
+visible = false
+mesh = SubResource("Mesh_flash")
+surface_material_override/0 = SubResource("Mat_flash")

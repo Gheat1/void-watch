@@ -1,0 +1,118 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/network_menu.gd" id="1_menu"]
+
+[sub_resource type="StyleBoxFlat" id="PanelStyle"]
+bg_color = Color(0.08, 0.08, 0.08, 0.94)
+border_color = Color(0.55, 0.55, 0.55, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 24
+content_margin_right = 24
+content_margin_top = 22
+content_margin_bottom = 22
+
+[node name="NetworkMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_menu")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.04, 0.04, 0.04, 1)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -240.0
+offset_right = 220.0
+offset_bottom = 240.0
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+text = "VOIDWATCH"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
+
+[node name="Subtitle" type="Label" parent="Panel/VBox"]
+text = "— multiplayer —"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.70, 0.70, 0.70, 1.0)
+
+[node name="Spacer1" type="Control" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 8)
+
+[node name="IPRow" type="HBoxContainer" parent="Panel/VBox"]
+theme_override_constants/separation = 8
+
+[node name="IPLabel" type="Label" parent="Panel/VBox/IPRow"]
+text = "Server IP"
+custom_minimum_size = Vector2(80, 0)
+
+[node name="IPField" type="LineEdit" parent="Panel/VBox/IPRow"]
+size_flags_horizontal = 3
+text = "game.gheat.net"
+
+[node name="PortRow" type="HBoxContainer" parent="Panel/VBox"]
+theme_override_constants/separation = 8
+
+[node name="PortLabel" type="Label" parent="Panel/VBox/PortRow"]
+text = "Port"
+custom_minimum_size = Vector2(80, 0)
+
+[node name="PortField" type="LineEdit" parent="Panel/VBox/PortRow"]
+size_flags_horizontal = 3
+text = "7777"
+
+[node name="Spacer2" type="Control" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 8)
+
+[node name="QuickJoinBtn" type="Button" parent="Panel/VBox"]
+text = "Play on game.gheat.net"
+custom_minimum_size = Vector2(0, 48)
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
+
+[node name="OrLabel" type="Label" parent="Panel/VBox"]
+text = "— or use custom IP —"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.60, 0.60, 0.60, 1.0)
+theme_override_font_sizes/font_size = 12
+
+[node name="HostBtn" type="Button" parent="Panel/VBox"]
+text = "Host Local Server"
+custom_minimum_size = Vector2(0, 38)
+theme_override_font_sizes/font_size = 15
+
+[node name="JoinBtn" type="Button" parent="Panel/VBox"]
+text = "Join Custom IP"
+custom_minimum_size = Vector2(0, 38)
+theme_override_font_sizes/font_size = 15
+
+[node name="Spacer3" type="Control" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 6)
+
+[node name="StatusLabel" type="Label" parent="Panel/VBox"]
+text = ""
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.80, 0.80, 0.80, 1.0)

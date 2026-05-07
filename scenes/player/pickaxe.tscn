@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://ddx54kincaojr"]
+
+[ext_resource type="Script" uid="uid://ch8bep6r66ohw" path="res://scripts/pickaxe_anim.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://db2jg8sas87t5" path="res://VoidPickaxe.glb" id="2_pickaxe"]
+
+[node name="Pickaxe" type="Node3D" unique_id=1149050551]
+script = ExtResource("1_script")
+
+[node name="VoidPickaxe" parent="." unique_id=919193178 instance=ExtResource("2_pickaxe")]
+transform = Transform3D(0.00770394, -0.009051869, -0.11940985, -0.033941578, 0.11458483, -0.01087591, 0.114841715, 0.03447288, 0.0047959997, 0.04, -0.07, 0.065)

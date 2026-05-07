@@ -1,0 +1,95 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/building_piece.gd" id="1_bp"]
+
+; Shared shapes/meshes
+[sub_resource type="BoxShape3D" id="Shape_post"]
+size = Vector3(0.9, 3.0, 0.25)
+
+[sub_resource type="BoxShape3D" id="Shape_beam"]
+size = Vector3(4.0, 0.9, 0.25)
+
+[sub_resource type="BoxMesh" id="Mesh_post"]
+size = Vector3(0.9, 3.0, 0.25)
+
+[sub_resource type="BoxMesh" id="Mesh_beam"]
+size = Vector3(4.0, 0.9, 0.25)
+
+[sub_resource type="BoxMesh" id="Mesh_frame_v"]
+size = Vector3(0.10, 1.20, 0.32)
+
+[sub_resource type="BoxMesh" id="Mesh_frame_h"]
+size = Vector3(2.40, 0.10, 0.32)
+
+[sub_resource type="StandardMaterial3D" id="Mat_panel"]
+albedo_color = Color(0.55, 0.57, 0.62, 1)
+metallic = 0.55
+roughness = 0.40
+
+[sub_resource type="StandardMaterial3D" id="Mat_trim"]
+albedo_color = Color(0.25, 0.27, 0.30, 1)
+metallic = 0.65
+roughness = 0.30
+
+[node name="Window" type="StaticBody3D"]
+script = ExtResource("1_bp")
+piece_type = "Window"
+
+; Side posts span full height so the window frame is structurally sound
+[node name="ColPostL" type="CollisionShape3D" parent="."]
+position = Vector3(-1.55, 0, 0)
+shape = SubResource("Shape_post")
+
+[node name="ColPostR" type="CollisionShape3D" parent="."]
+position = Vector3(1.55, 0, 0)
+shape = SubResource("Shape_post")
+
+; Top panel and bottom sill fill the space above/below the opening
+[node name="ColTop" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1.05, 0)
+shape = SubResource("Shape_beam")
+
+[node name="ColSill" type="CollisionShape3D" parent="."]
+position = Vector3(0, -1.05, 0)
+shape = SubResource("Shape_beam")
+
+[node name="MeshPostL" type="MeshInstance3D" parent="."]
+position = Vector3(-1.55, 0, 0)
+mesh = SubResource("Mesh_post")
+surface_material_override/0 = SubResource("Mat_panel")
+
+[node name="MeshPostR" type="MeshInstance3D" parent="."]
+position = Vector3(1.55, 0, 0)
+mesh = SubResource("Mesh_post")
+surface_material_override/0 = SubResource("Mat_panel")
+
+[node name="MeshTop" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.05, 0)
+mesh = SubResource("Mesh_beam")
+surface_material_override/0 = SubResource("Mat_panel")
+
+[node name="MeshSill" type="MeshInstance3D" parent="."]
+position = Vector3(0, -1.05, 0)
+mesh = SubResource("Mesh_beam")
+surface_material_override/0 = SubResource("Mat_panel")
+
+; Frame trim around the window opening (1.2 m tall × 2.2 m wide opening)
+[node name="FrameL" type="MeshInstance3D" parent="."]
+position = Vector3(-1.05, 0, 0)
+mesh = SubResource("Mesh_frame_v")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="FrameR" type="MeshInstance3D" parent="."]
+position = Vector3(1.05, 0, 0)
+mesh = SubResource("Mesh_frame_v")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="FrameTop" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.55, 0)
+mesh = SubResource("Mesh_frame_h")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="FrameBot" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.55, 0)
+mesh = SubResource("Mesh_frame_h")
+surface_material_override/0 = SubResource("Mat_trim")

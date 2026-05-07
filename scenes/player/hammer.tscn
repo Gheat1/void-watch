@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dd2a3leknyhcl"]
+
+[ext_resource type="Script" path="res://scripts/hammer_anim.gd" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://c38p8b4h78iha" path="res://VoidHammer.glb" id="1_hammer"]
+
+[node name="Hammer" type="Node3D" unique_id=1843848197]
+script = ExtResource("2_script")
+
+[node name="VoidHammer" parent="." unique_id=1738037130 instance=ExtResource("1_hammer")]
+transform = Transform3D(0.024553902, -0.0028283545, -0.10204953, -0.027944544, 0.100764774, -0.009516421, 0.09818965, 0.029384695, 0.022810778, -0.01, -0.06, 0.115)

@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://coglh35euqvt8"]
+
+[ext_resource type="Script" uid="uid://df0kr8t8qjgny" path="res://scripts/gun.gd" id="1_gun"]
+[ext_resource type="PackedScene" uid="uid://bxekdxrlox4wn" path="res://VoidRifle.glb" id="2_rifle"]
+
+[sub_resource type="SphereMesh" id="Flash_mesh"]
+radius = 0.08
+height = 0.16
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="Mat_flash"]
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.4, 1)
+
+[node name="Gun" type="Node3D" unique_id=62192528]
+script = ExtResource("1_gun")
+
+[node name="VoidRifle" parent="." unique_id=1577251829 instance=ExtResource("2_rifle")]
+transform = Transform3D(-1.2638904, 0.0030493226, -0.052884873, 0, 1.2629024, 0.07281849, 0.052972715, 0.072754614, -1.2617946, -1.285, 0.015, -0.04)
+
+[node name="MuzzleLight" type="OmniLight3D" parent="." unique_id=1034418577]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.485, 0.655, -1.195)
+visible = false
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 3.59
+
+[node name="MuzzleFlash" type="MeshInstance3D" parent="." unique_id=2001016597]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015, 0.045, -0.205)
+visible = false
+mesh = SubResource("Flash_mesh")
+surface_material_override/0 = SubResource("Mat_flash")

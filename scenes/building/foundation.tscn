@@ -1,0 +1,86 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/building_piece.gd" id="1_bp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(4, 0.25, 4)
+
+[sub_resource type="BoxMesh" id="Mesh_slab"]
+size = Vector3(4, 0.25, 4)
+
+[sub_resource type="StandardMaterial3D" id="Mat_deck"]
+albedo_color = Color(0.46, 0.48, 0.52, 1)
+metallic = 0.45
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="Mat_trim"]
+albedo_color = Color(0.25, 0.26, 0.30, 1)
+metallic = 0.65
+roughness = 0.30
+
+[sub_resource type="StandardMaterial3D" id="Mat_beam"]
+albedo_color = Color(0.20, 0.22, 0.24, 1)
+metallic = 0.55
+roughness = 0.45
+
+[sub_resource type="BoxMesh" id="Mesh_beam"]
+size = Vector3(0.22, 4.0, 0.22)
+
+[sub_resource type="BoxMesh" id="Mesh_edge_x"]
+size = Vector3(4.10, 0.10, 0.18)
+
+[sub_resource type="BoxMesh" id="Mesh_edge_z"]
+size = Vector3(0.18, 0.10, 4.10)
+
+[node name="Foundation" type="StaticBody3D"]
+script = ExtResource("1_bp")
+piece_type = "Foundation"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_1")
+
+[node name="Slab" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_slab")
+surface_material_override/0 = SubResource("Mat_deck")
+
+; Raised perimeter lip — gives the deck a "panelled" silhouette
+[node name="EdgeN" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.175, -2.0)
+mesh = SubResource("Mesh_edge_x")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="EdgeS" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.175, 2.0)
+mesh = SubResource("Mesh_edge_x")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="EdgeW" type="MeshInstance3D" parent="."]
+position = Vector3(-2.0, 0.175, 0)
+mesh = SubResource("Mesh_edge_z")
+surface_material_override/0 = SubResource("Mat_trim")
+
+[node name="EdgeE" type="MeshInstance3D" parent="."]
+position = Vector3(2.0, 0.175, 0)
+mesh = SubResource("Mesh_edge_z")
+surface_material_override/0 = SubResource("Mat_trim")
+
+; Support struts under the slab (cosmetic — no collision)
+[node name="BeamFL" type="MeshInstance3D" parent="."]
+position = Vector3(-1.78, -2.125, -1.78)
+mesh = SubResource("Mesh_beam")
+surface_material_override/0 = SubResource("Mat_beam")
+
+[node name="BeamFR" type="MeshInstance3D" parent="."]
+position = Vector3(1.78, -2.125, -1.78)
+mesh = SubResource("Mesh_beam")
+surface_material_override/0 = SubResource("Mat_beam")
+
+[node name="BeamBL" type="MeshInstance3D" parent="."]
+position = Vector3(-1.78, -2.125, 1.78)
+mesh = SubResource("Mesh_beam")
+surface_material_override/0 = SubResource("Mat_beam")
+
+[node name="BeamBR" type="MeshInstance3D" parent="."]
+position = Vector3(1.78, -2.125, 1.78)
+mesh = SubResource("Mesh_beam")
+surface_material_override/0 = SubResource("Mat_beam")
