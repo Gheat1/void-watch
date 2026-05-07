@@ -1,0 +1,94 @@
+[gd_scene format=3 uid="uid://qx0xrr67hr1i"]
+
+[ext_resource type="Script" uid="uid://ynadj0cpl2u0" path="res://scripts/dune_buggy.gd" id="1_buggy"]
+
+[sub_resource type="BoxShape3D" id="ChassisShape"]
+size = Vector3(1.8, 0.6, 3.4)
+
+[sub_resource type="SceneReplicationConfig" id="SyncCfg_buggy"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:linear_velocity")
+properties/2/spawn = false
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:angular_velocity")
+properties/3/spawn = false
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:driver_peer_id")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:passenger_peer_id")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+
+[node name="DuneBuggy" type="VehicleBody3D" unique_id=639676987]
+mass = 600.0
+script = ExtResource("1_buggy")
+
+[node name="Chassis" type="CollisionShape3D" parent="." unique_id=786794821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("ChassisShape")
+
+[node name="WheelFL" type="VehicleWheel3D" parent="." unique_id=701840276]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 0, -1.1)
+use_as_steering = true
+wheel_radius = 0.38
+wheel_friction_slip = 2.2
+suspension_travel = 0.25
+suspension_stiffness = 28.0
+suspension_max_force = 8000.0
+damping_compression = 3.0
+damping_relaxation = 2.5
+
+[node name="WheelFR" type="VehicleWheel3D" parent="." unique_id=631106132]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.05, 0, -1.1)
+use_as_steering = true
+wheel_radius = 0.38
+wheel_friction_slip = 2.2
+suspension_travel = 0.25
+suspension_stiffness = 28.0
+suspension_max_force = 8000.0
+damping_compression = 3.0
+damping_relaxation = 2.5
+
+[node name="WheelRL" type="VehicleWheel3D" parent="." unique_id=176787325]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 0, 1.1)
+use_as_traction = true
+wheel_radius = 0.38
+wheel_friction_slip = 2.2
+suspension_travel = 0.25
+suspension_stiffness = 28.0
+suspension_max_force = 8000.0
+damping_compression = 3.0
+damping_relaxation = 2.5
+
+[node name="WheelRR" type="VehicleWheel3D" parent="." unique_id=1004163012]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.05, 0, 1.1)
+use_as_traction = true
+wheel_radius = 0.38
+wheel_friction_slip = 2.2
+suspension_travel = 0.25
+suspension_stiffness = 28.0
+suspension_max_force = 8000.0
+damping_compression = 3.0
+damping_relaxation = 2.5
+
+[node name="SeatDriver" type="Node3D" parent="." unique_id=239253196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.5, -0.2)
+
+[node name="SeatPassenger" type="Node3D" parent="." unique_id=1974224565]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.5, -0.2)
+
+[node name="CameraPivot" type="Node3D" parent="." unique_id=1445717140]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0.3)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=502924133]
+transform = Transform3D(1, 0, 0, 0, 0.98768836, 0.15643448, 0, -0.15643448, 0.98768836, 0, 0.7, 3.6)
+far = 12000.0
+
+[node name="Sync" type="MultiplayerSynchronizer" parent="." unique_id=609552952]
+replication_config = SubResource("SyncCfg_buggy")

@@ -11,7 +11,8 @@
       "Bash(Sort-Object FullName)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\" -Recurse -Filter \"*.glb\" -ErrorAction SilentlyContinue)",
       "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\\\\assets\")",
-      "Bash(Select-Object FullName, Extension)"
+      "Bash(Select-Object FullName, Extension)",
+      "Bash(dir /s /b *.gd *.tscn)"
     ]
   }
 }

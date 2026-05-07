@@ -38,6 +38,26 @@ func _ready() -> void:
 		Net.rpc_id(1, "notify_ready")
 	else:
 		_spawn_offline_player.call_deferred()
+	_spawn_buggy.call_deferred()
+
+func _spawn_buggy() -> void:
+	if get_node_or_null("DuneBuggy") != null:
+		return   # already spawned (avoid duplicates on reconnect)
+	var packed : PackedScene = load("res://scenes/entities/dune_buggy.tscn")
+	if packed == null:
+		return
+	var buggy : Node3D = packed.instantiate()
+	buggy.name = "DuneBuggy"
+	add_child(buggy, true)
+	# Clients receive the correct position via MultiplayerSynchronizer.
+	# Only the host / singleplayer needs to set it, and only they have
+	# the terrain noise ready at this point.
+	if not multiplayer.has_multiplayer_peer() or multiplayer.is_server():
+		var world := get_node_or_null("World")
+		var ground_y := 4.0
+		if world and world.has_method("get_terrain_height"):
+			ground_y = world.get_terrain_height(0.0, 0.0)
+		buggy.global_position = Vector3(6.0, ground_y + 2.0, 0.0)
 
 func _spawn_offline_player() -> void:
 	var players := get_node_or_null("Players")

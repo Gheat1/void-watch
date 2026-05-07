@@ -65,6 +65,10 @@ var _keypad_door             : Node     = null
 var _is_setting_code         : bool     = false
 var _pending_doorway         : Node3D   = null
 
+var _in_vehicle   : bool = false
+var _vehicle_ref  : Node = null
+var _vehicle_seat : int  = -1
+
 # ── Multiplayer plumbing ────────────────────────────────────────────────────
 
 func _enter_tree() -> void:
@@ -165,6 +169,8 @@ func _no_overlay_open() -> bool:
 # ── Input ─────────────────────────────────────────────────────────────────
 
 func _input(event: InputEvent) -> void:
+	if _in_vehicle:
+		return   # vehicle script handles all input while seated
 	if not is_local():
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and not hotbar.is_inventory_open():
@@ -201,6 +207,14 @@ func _input(event: InputEvent) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_local():
+		return
+	if _in_vehicle:
+		if event.is_action_pressed("interact"):
+			_try_exit_vehicle()
+		elif event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode == KEY_F:
+				if _vehicle_ref and is_instance_valid(_vehicle_ref):
+					_vehicle_ref.flip_upright()
 		return
 	if event.is_action_pressed("ui_cancel"):
 		if _keypad_ui != null and _keypad_ui.visible:
@@ -275,6 +289,11 @@ func _physics_process(delta: float) -> void:
 	# Remote players: just mirror body rotation to head, sync drives position.
 	if not is_local():
 		remote_pivot.rotation.y = head.rotation.y
+		return
+
+	# Vehicle handles movement while seated.
+	if _in_vehicle:
+		_update_interact_prompt()
 		return
 
 	_update_stance(Input.is_action_pressed("sneak"))
@@ -514,7 +533,76 @@ func _swing_pickaxe() -> void:
 		hotbar.add_resource(rid, amt)
 		_show_pickup("+%d %s" % [amt, _pretty_name(rid)])
 
+func enter_vehicle(vehicle: Node, seat: int) -> void:
+	_in_vehicle   = true
+	_vehicle_ref  = vehicle
+	_vehicle_seat = seat
+	velocity      = Vector3.ZERO
+	col_shape.disabled = true
+	body_visual.visible   = false
+	remote_pivot.visible  = false
+	if is_local():
+		gun.visible          = false
+		hammer.visible       = false
+		pickaxe.visible      = false
+		ghost_placer.visible = false
+		hud_layer.visible    = false
+		build_canvas.visible = false
+		camera.current       = false
+		if seat == 0:   # driver gets third-person camera
+			var vc := vehicle.get_node_or_null("CameraPivot/Camera3D")
+			if vc:
+				vc.current = true
+
+func exit_vehicle(vehicle: Node) -> void:
+	_in_vehicle   = false
+	var old_v     := _vehicle_ref
+	_vehicle_ref  = null
+	_vehicle_seat = -1
+	col_shape.disabled = false
+	if is_local():
+		var vc := vehicle.get_node_or_null("CameraPivot/Camera3D")
+		if vc:
+			vc.current = false
+		camera.current       = true
+		hud_layer.visible    = true
+		build_canvas.visible = true
+		body_visual.visible  = true
+		_set_mode(mode)
+		if is_instance_valid(old_v):
+			var eject := (old_v as Node3D).global_basis.x * 2.5
+			global_position = (old_v as Node3D).global_position + eject + Vector3(0, 1.5, 0)
+		velocity = Vector3.ZERO
+	else:
+		remote_pivot.visible = true
+
+func _try_exit_vehicle() -> void:
+	if _vehicle_ref == null or not is_instance_valid(_vehicle_ref):
+		return
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		_vehicle_ref.rpc_id(1, "request_exit")
+	else:
+		_vehicle_ref.request_exit()
+
+func _find_nearby_vehicle() -> Node:
+	for v in get_tree().get_nodes_in_group("vehicles"):
+		var vn := v as Node3D
+		if vn and global_position.distance_to(vn.global_position) <= 5.0:
+			return v
+	return null
+
 func _try_interact() -> void:
+	# Proximity check for buggy — no need to aim at it.
+	var nearby_v := _find_nearby_vehicle()
+	if nearby_v != null:
+		# Host calls directly to avoid rpc_id(1,...) from peer-1 to itself
+		# (Godot drops self-addressed RPCs without call_local).
+		if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+			nearby_v.rpc_id(1, "request_enter", 0)
+		else:
+			nearby_v.request_enter(0)
+		return
+
 	# Open doors have no collision — detect by proximity first.
 	var open_door := _find_nearby_open_door()
 	if open_door != null:
@@ -627,6 +715,18 @@ func _door_call(door: Node, method: String) -> void:
 
 func _update_interact_prompt() -> void:
 	interact_prompt.visible = false
+
+	if _in_vehicle:
+		interact_prompt.visible = true
+		interact_prompt.text    = "[E] Exit vehicle"
+		return
+
+	# Proximity check for buggy (no aim required).
+	var nearby_v := _find_nearby_vehicle()
+	if nearby_v != null:
+		interact_prompt.visible = true
+		interact_prompt.text    = "[E] Enter buggy"
+		return
 
 	# Open doors have no collision — check proximity first.
 	var open_door := _find_nearby_open_door()
