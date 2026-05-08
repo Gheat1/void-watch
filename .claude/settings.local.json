@@ -12,7 +12,10 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\" -Recurse -Filter \"*.glb\" -ErrorAction SilentlyContinue)",
       "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\jaede\\\\Documents\\\\Rolexfund\\\\VoidWatch\\\\void-watch\\\\assets\")",
       "Bash(Select-Object FullName, Extension)",
-      "Bash(dir /s /b *.gd *.tscn)"
+      "Bash(dir /s /b *.gd *.tscn)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(ConvertTo-Json -Depth 10)",
+      "Bash(Out-String)"
     ]
   }
 }

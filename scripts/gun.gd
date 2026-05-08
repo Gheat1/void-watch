@@ -4,6 +4,7 @@ class_name Gun
 signal ammo_changed(current, mag, reserve)
 signal reload_started(duration)
 signal reload_finished()
+signal hit_confirmed
 
 @export var damage      := 18.0
 @export var fire_rate   := 0.11   # seconds per shot (~9 rps)
@@ -26,6 +27,8 @@ var _reloading    := false
 var _reload_timer := 0.0
 var _flash_timer  := 0.0
 
+var _shoot_audio : AudioStreamPlayer = null
+
 func _ready() -> void:
 	ammo_in_mag  = mag_size
 	reserve_ammo = reserve_max
@@ -33,6 +36,9 @@ func _ready() -> void:
 		muzzle_flash.visible = false
 	if muzzle_light:
 		muzzle_light.visible = false
+	_shoot_audio = AudioStreamPlayer.new()
+	_shoot_audio.stream = load("res://Shot.mp3")
+	add_child(_shoot_audio)
 
 func _process(delta: float) -> void:
 	_cooldown = max(0.0, _cooldown - delta)
@@ -62,6 +68,9 @@ func fire(ray: RayCast3D) -> bool:
 	_cooldown    = fire_rate
 	ammo_in_mag -= 1
 	ammo_changed.emit(ammo_in_mag, mag_size, reserve_ammo)
+
+	if _shoot_audio:
+		_shoot_audio.play()
 
 	_flash_timer = 0.06
 	if muzzle_light:
@@ -122,6 +131,7 @@ func _apply_damage_chain(target) -> void:
 				node = p
 	if node == null:
 		return
+	hit_confirmed.emit()
 	# Players replicate via RPC (target authority applies + syncs health).
 	# Other entities (guards / mineral nodes / building pieces) are local-state
 	# in this MVP, so call directly on this peer.

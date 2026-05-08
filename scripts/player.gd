@@ -69,6 +69,12 @@ var _in_vehicle   : bool = false
 var _vehicle_ref  : Node = null
 var _vehicle_seat : int  = -1
 
+var _wallhack_active : bool = false
+
+var _hit_audio   : AudioStreamPlayer = null
+var _hitmarker   : Control           = null
+var _music_audio : AudioStreamPlayer = null
+
 # ── Multiplayer plumbing ────────────────────────────────────────────────────
 
 func _enter_tree() -> void:
@@ -132,6 +138,23 @@ func _setup_local() -> void:
 	_xhair_mat.shader = preload("res://shaders/crosshair_invert.gdshader")
 	crosshair.material = _xhair_mat
 
+	_hit_audio = AudioStreamPlayer.new()
+	_hit_audio.stream = load("res://Hit.mp3")
+	_hit_audio.volume_db = 0.0
+	add_child(_hit_audio)
+
+	_hitmarker = preload("res://scripts/hitmarker.gd").new()
+	$HUD/Control.add_child(_hitmarker)
+
+	gun.hit_confirmed.connect(_on_hit_confirmed)
+
+	_music_audio = AudioStreamPlayer.new()
+	_music_audio.stream = load("res://Music1.mp3")
+	_music_audio.volume_db = -6.0
+	add_child(_music_audio)
+	_music_audio.finished.connect(_on_music_finished)
+	_music_audio.play()
+
 func _setup_remote() -> void:
 	# Hide all UI and view-model on remote players — we only want their body.
 	camera.current = false
@@ -189,6 +212,7 @@ func _input(event: InputEvent) -> void:
 			KEY_5: hotbar.select(4)
 			KEY_6: hotbar.select(5)
 			KEY_TAB: hotbar.toggle_inventory()
+			KEY_F7:  _toggle_wallhack()
 
 	if event is InputEventMouseButton:
 		if event.pressed:
@@ -356,7 +380,7 @@ func _update_stance(sneaking: bool) -> void:
 	cap.height = CROUCH_HEIGHT if sneaking else STAND_HEIGHT
 	col_shape.position.y = cap.height * 0.5
 	head.position.y = CROUCH_CAM_Y if sneaking else STAND_CAM_Y
-	body_visual.scale.y = 0.6 if sneaking else 1.0
+	body_visual.scale.y = 0.423 * 0.6 if sneaking else 0.423
 
 # ── Mode ───────────────────────────────────────────────────────────────────
 
@@ -403,6 +427,16 @@ func _on_reload_finished() -> void:
 	if is_local():
 		reload_label.visible = false
 		ammo_label.text = "%d  |  %d" % [_ammo_cur, _ammo_res]
+
+func _on_hit_confirmed() -> void:
+	if _hit_audio:
+		_hit_audio.play()
+	if _hitmarker:
+		_hitmarker.show_hit()
+
+func _on_music_finished() -> void:
+	var delay := randf_range(240.0, 360.0)
+	get_tree().create_timer(delay).timeout.connect(_music_audio.play)
 
 # ── Health ─────────────────────────────────────────────────────────────────
 
@@ -595,12 +629,12 @@ func _try_interact() -> void:
 	# Proximity check for buggy — no need to aim at it.
 	var nearby_v := _find_nearby_vehicle()
 	if nearby_v != null:
-		# Host calls directly to avoid rpc_id(1,...) from peer-1 to itself
-		# (Godot drops self-addressed RPCs without call_local).
+		# Pick whichever seat is free; driver seat first, passenger if taken.
+		var seat := 0 if nearby_v.get("driver_peer_id") == -1 else 1
 		if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
-			nearby_v.rpc_id(1, "request_enter", 0)
+			nearby_v.rpc_id(1, "request_enter", seat)
 		else:
-			nearby_v.request_enter(0)
+			nearby_v.request_enter(seat)
 		return
 
 	# Open doors have no collision — detect by proximity first.
@@ -724,8 +758,11 @@ func _update_interact_prompt() -> void:
 	# Proximity check for buggy (no aim required).
 	var nearby_v := _find_nearby_vehicle()
 	if nearby_v != null:
-		interact_prompt.visible = true
-		interact_prompt.text    = "[E] Enter buggy"
+		var driver_free    : bool = nearby_v.get("driver_peer_id")    == -1
+		var passenger_free : bool = nearby_v.get("passenger_peer_id") == -1
+		if driver_free or passenger_free:
+			interact_prompt.visible = true
+			interact_prompt.text = "[E] Drive buggy" if driver_free else "[E] Ride as passenger"
 		return
 
 	# Open doors have no collision — check proximity first.
@@ -833,3 +870,28 @@ func _on_sens_changed(v: float) -> void:
 
 func _on_pause_resumed() -> void:
 	pass
+
+# ── Wall hack (F7 toggle) ──────────────────────────────────────────────────
+
+func _toggle_wallhack() -> void:
+	_wallhack_active = not _wallhack_active
+	for piece in get_tree().get_nodes_in_group("building_pieces"):
+		_set_piece_wallhack(piece, _wallhack_active)
+	_show_pickup("Wall hack: %s" % ("ON" if _wallhack_active else "OFF"))
+
+func _set_piece_wallhack(piece: Node, enable: bool) -> void:
+	for mi in piece.find_children("*", "MeshInstance3D", true, false):
+		var mesh := mi as MeshInstance3D
+		var surf_count := mesh.get_surface_override_material_count()
+		if surf_count == 0 and mesh.mesh != null:
+			surf_count = mesh.mesh.get_surface_count()
+		for i in surf_count:
+			if enable:
+				var mat := StandardMaterial3D.new()
+				mat.albedo_color = Color(0.2, 0.6, 1.0, 0.25)
+				mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+				mat.no_depth_test = true
+				mesh.set_surface_override_material(i, mat)
+			else:
+				mesh.set_surface_override_material(i, null)
