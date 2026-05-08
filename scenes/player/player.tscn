@@ -8,8 +8,8 @@
 [ext_resource type="Script" path="res://scripts/hotbar.gd" id="6_hotbar"]
 [ext_resource type="PackedScene" path="res://scenes/player/hammer.tscn" id="7_hammer"]
 [ext_resource type="PackedScene" path="res://scenes/player/pickaxe.tscn" id="8_pickaxe"]
-[ext_resource type="PackedScene" uid="uid://86m2yeywcbpn" path="res://VoidBody.glb" id="9_voidbody"]
-[ext_resource type="PackedScene" uid="uid://ci37jww6ijrb7" path="res://VoidPlayer.glb" id="10_voidplayer"]
+[ext_resource type="PackedScene" uid="uid://86m2yeywcbpn" path="res://assets/models/VoidBody.glb" id="9_voidbody"]
+[ext_resource type="PackedScene" uid="uid://ci37jww6ijrb7" path="res://assets/models/VoidPlayer.glb" id="10_voidplayer"]
 
 [sub_resource type="SceneReplicationConfig" id="SyncCfg_player"]
 properties/0/path = NodePath(".:position")

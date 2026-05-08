@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ck0qjtbov1v1t"
-path="res://.godot/imported/VoidWatchLogo.png-0ba144244021b47740cb0d1a1e8887ea.ctex"
+uid="uid://dnlce3ctlkius"
+path="res://.godot/imported/Hammer.png-6cd7146d288811523fc968dc0ff16922.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://VoidWatchLogo.png"
-dest_files=["res://.godot/imported/VoidWatchLogo.png-0ba144244021b47740cb0d1a1e8887ea.ctex"]
+source_file="res://assets/icons/Hammer.png"
+dest_files=["res://.godot/imported/Hammer.png-6cd7146d288811523fc968dc0ff16922.ctex"]
 
 [params]
 

@@ -15,7 +15,23 @@
       "Bash(dir /s /b *.gd *.tscn)",
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(ConvertTo-Json -Depth 10)",
-      "Bash(Out-String)"
+      "Bash(Out-String)",
+      "Bash(grep -E \"\\\\.\\(import|glb|mp3|png\\)$\")",
+      "Bash(mv __TRACKED_VAR__.glb assets/models/__TRACKED_VAR__.glb)",
+      "Bash(mv __TRACKED_VAR__.glb.import assets/models/__TRACKED_VAR__.glb.import)",
+      "Bash(mv __TRACKED_VAR__.png assets/textures/__TRACKED_VAR__.png)",
+      "Bash(mv __TRACKED_VAR__.png.import assets/textures/__TRACKED_VAR__.png.import)",
+      "Bash(mv __TRACKED_VAR__.mp3 assets/audio/__TRACKED_VAR__.mp3)",
+      "Bash(sed -i 's|source_file=\"res://__TRACKED_VAR__.glb\"|source_file=\"res://assets/models/__TRACKED_VAR__.glb\"|g' assets/models/__TRACKED_VAR__.glb.import)",
+      "Bash(sed -i 's|source_file=\"res://__TRACKED_VAR__.png\"|source_file=\"res://assets/textures/__TRACKED_VAR__.png\"|g' assets/textures/__TRACKED_VAR__.png.import)",
+      "Bash(sed -i 's|source_file=\"res://__TRACKED_VAR__.mp3\"|source_file=\"res://assets/audio/__TRACKED_VAR__.mp3\"|g' assets/audio/__TRACKED_VAR__.mp3.import)",
+      "Bash(sed -i 's|source_file=\"res://assets/__TRACKED_VAR__.png\"|source_file=\"res://assets/icons/__TRACKED_VAR__.png\"|g' assets/icons/__TRACKED_VAR__.png.import)",
+      "Bash(sed -i 's|load\\(\"res://Hit.mp3\"\\)|load\\(\"res://assets/audio/Hit.mp3\"\\)|g' scripts/player.gd)",
+      "Bash(sed -i 's|load\\(\"res://Music1.mp3\"\\)|load\\(\"res://assets/audio/Music1.mp3\"\\)|g' scripts/player.gd)",
+      "Bash(sed -i 's|load\\(\"res://Shot.mp3\"\\)|load\\(\"res://assets/audio/Shot.mp3\"\\)|g' scripts/gun.gd)",
+      "Bash(sed -i 's|load\\(\"res://VoidPlayerSitting.glb\"\\)|load\\(\"res://assets/models/VoidPlayerSitting.glb\"\\)|g' scripts/dune_buggy.gd)",
+      "Bash(sed -i 's|\"res://assets/Rifle.png\"|\"res://assets/icons/Rifle.png\"|g' scripts/hotbar.gd)",
+      "Bash(Select-String -Pattern \"Sitting|sitting\")"
     ]
   }
 }

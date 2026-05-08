@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cv5kisc1xyj0"
-path="res://.godot/imported/VoidRifle.glb-eff27522abc839a931462e0b8ea7f97e.scn"
+uid="uid://ci37jww6ijrb7"
+path="res://.godot/imported/VoidPlayer.glb-6121b35ce9dda5276bbf72e1335b5e3a.scn"
 
 [deps]
 
-source_file="res://VoidRifle.glb"
-dest_files=["res://.godot/imported/VoidRifle.glb-eff27522abc839a931462e0b8ea7f97e.scn"]
+source_file="res://assets/models/VoidPlayer.glb"
+dest_files=["res://.godot/imported/VoidPlayer.glb-6121b35ce9dda5276bbf72e1335b5e3a.scn"]
 
 [params]
 

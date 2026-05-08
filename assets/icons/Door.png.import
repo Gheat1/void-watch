@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ck0qjtbov1v1t"
-path="res://.godot/imported/VoidWatchLogo.png-0ba144244021b47740cb0d1a1e8887ea.ctex"
+uid="uid://bx6gq1ttlejlo"
+path="res://.godot/imported/Door.png-dd509e556410d075e3fb21b05cba9b74.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://VoidWatchLogo.png"
-dest_files=["res://.godot/imported/VoidWatchLogo.png-0ba144244021b47740cb0d1a1e8887ea.ctex"]
+source_file="res://assets/icons/Door.png"
+dest_files=["res://.godot/imported/Door.png-dd509e556410d075e3fb21b05cba9b74.ctex"]
 
 [params]
 

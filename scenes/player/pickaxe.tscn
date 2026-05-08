@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ddx54kincaojr"]
 
 [ext_resource type="Script" uid="uid://ch8bep6r66ohw" path="res://scripts/pickaxe_anim.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://db2jg8sas87t5" path="res://VoidPickaxe.glb" id="2_pickaxe"]
+[ext_resource type="PackedScene" uid="uid://db2jg8sas87t5" path="res://assets/models/VoidPickaxe.glb" id="2_pickaxe"]
 
 [node name="Pickaxe" type="Node3D" unique_id=1149050551]
 script = ExtResource("1_script")

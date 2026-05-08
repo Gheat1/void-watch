@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dd2a3leknyhcl"]
 
 [ext_resource type="Script" path="res://scripts/hammer_anim.gd" id="2_script"]
-[ext_resource type="PackedScene" uid="uid://c38p8b4h78iha" path="res://VoidHammer.glb" id="1_hammer"]
+[ext_resource type="PackedScene" uid="uid://c38p8b4h78iha" path="res://assets/models/VoidHammer.glb" id="1_hammer"]
 
 [node name="Hammer" type="Node3D" unique_id=1843848197]
 script = ExtResource("2_script")

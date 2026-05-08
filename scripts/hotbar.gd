@@ -34,14 +34,14 @@ const RESOURCE_INFO := {
 }
 
 const ITEM_TEXTURES := {
-	"rifle":   "res://assets/Rifle.png",
-	"hammer":  "res://assets/Hammer.png",
-	"pickaxe": "res://assets/Pickaxe.png",
-	"stone":   "res://assets/Stone.png",
-	"metal":   "res://assets/Raw_Metal.png",
-	"wood":    "res://assets/Wood.png",
-	"ammo":    "res://assets/Ammo.png",
-	"door":    "res://assets/Door.png",
+	"rifle":   "res://assets/icons/Rifle.png",
+	"hammer":  "res://assets/icons/Hammer.png",
+	"pickaxe": "res://assets/icons/Pickaxe.png",
+	"stone":   "res://assets/icons/Stone.png",
+	"metal":   "res://assets/icons/Raw_Metal.png",
+	"wood":    "res://assets/icons/Wood.png",
+	"ammo":    "res://assets/icons/Ammo.png",
+	"door":    "res://assets/icons/Door.png",
 }
 
 const SLOT_SIZE  := Vector2(70, 80)
@@ -184,11 +184,8 @@ func _refresh_storage_slot(idx: int) -> void:
 		return
 	var slot : Panel = _storage_slots[idx]
 	var item : Dictionary = _storage_state[idx]
-	var icon  := slot.get_node_or_null("Icon") as ColorRect
 	var name_lbl  := slot.get_node_or_null("NameLabel") as Label
 	var stack_lbl := slot.get_node_or_null("StackLabel") as Label
-	if icon:
-		icon.color = item.get("color", Color(0.20, 0.20, 0.20))
 	var icon_tex := slot.get_node_or_null("IconTex") as TextureRect
 	if icon_tex:
 		var tp : String = ITEM_TEXTURES.get(item.get("id", ""), "")
@@ -382,23 +379,20 @@ func _make_slot(item: Dictionary, keybind: String) -> Panel:
 	stack_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 	p.add_child(stack_lbl)
 
-	# Icon block (centre) — solid colour background + texture overlay
-	var icon := ColorRect.new()
-	icon.name  = "Icon"
-	icon.color = item.get("color", Color(0.2, 0.2, 0.2))
-	icon.size  = Vector2(46, 36)
-	icon.position = Vector2((SLOT_SIZE.x - icon.size.x) * 0.5, 22)
-	p.add_child(icon)
+	# Icon block — fills the slot between the keybind label and the name label
+	const ICON_PAD := 4.0
+	const ICON_Y   := 16.0
+	var icon_w := SLOT_SIZE.x - ICON_PAD * 2          # 62 px
+	var icon_h := SLOT_SIZE.y - ICON_Y - 16.0         # 48 px
 
 	var icon_tex := TextureRect.new()
 	icon_tex.name = "IconTex"
 	var _tp : String = ITEM_TEXTURES.get(item.get("id", ""), "")
 	if _tp != "":
 		icon_tex.texture = load(_tp)
-	icon_tex.custom_minimum_size = Vector2(46, 36)
-	icon_tex.size = Vector2(46, 36)
-	icon_tex.position = Vector2((SLOT_SIZE.x - 46.0) * 0.5, 22)
-	icon_tex.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+	icon_tex.size         = Vector2(icon_w, icon_h)
+	icon_tex.position     = Vector2(ICON_PAD, ICON_Y)
+	icon_tex.expand_mode  = TextureRect.EXPAND_KEEP_SIZE
 	icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	p.add_child(icon_tex)

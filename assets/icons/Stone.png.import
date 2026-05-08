@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ck0qjtbov1v1t"
-path="res://.godot/imported/VoidWatchLogo.png-0ba144244021b47740cb0d1a1e8887ea.ctex"
+uid="uid://50chgv78ccvb"
+path="res://.godot/imported/Stone.png-cb4dac1f06ce83fa2b1206b6fa82d779.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://VoidWatchLogo.png"
-dest_files=["res://.godot/imported/VoidWatchLogo.png-0ba144244021b47740cb0d1a1e8887ea.ctex"]
+source_file="res://assets/icons/Stone.png"
+dest_files=["res://.godot/imported/Stone.png-cb4dac1f06ce83fa2b1206b6fa82d779.ctex"]
 
 [params]
 

@@ -37,7 +37,7 @@ func _ready() -> void:
 	if muzzle_light:
 		muzzle_light.visible = false
 	_shoot_audio = AudioStreamPlayer.new()
-	_shoot_audio.stream = load("res://Shot.mp3")
+	_shoot_audio.stream = load("res://assets/audio/Shot.mp3")
 	add_child(_shoot_audio)
 
 func _process(delta: float) -> void:

@@ -139,7 +139,7 @@ func _setup_local() -> void:
 	crosshair.material = _xhair_mat
 
 	_hit_audio = AudioStreamPlayer.new()
-	_hit_audio.stream = load("res://Hit.mp3")
+	_hit_audio.stream = load("res://assets/audio/Hit.mp3")
 	_hit_audio.volume_db = 0.0
 	add_child(_hit_audio)
 
@@ -149,7 +149,7 @@ func _setup_local() -> void:
 	gun.hit_confirmed.connect(_on_hit_confirmed)
 
 	_music_audio = AudioStreamPlayer.new()
-	_music_audio.stream = load("res://Music1.mp3")
+	_music_audio.stream = load("res://assets/audio/Music1.mp3")
 	_music_audio.volume_db = -6.0
 	add_child(_music_audio)
 	_music_audio.finished.connect(_on_music_finished)
@@ -583,10 +583,9 @@ func enter_vehicle(vehicle: Node, seat: int) -> void:
 		hud_layer.visible    = false
 		build_canvas.visible = false
 		camera.current       = false
-		if seat == 0:   # driver gets third-person camera
-			var vc := vehicle.get_node_or_null("CameraPivot/Camera3D")
-			if vc:
-				vc.current = true
+		var vc := vehicle.get_node_or_null("CameraPivot/Camera3D")
+		if vc:
+			vc.current = true
 
 func exit_vehicle(vehicle: Node) -> void:
 	_in_vehicle   = false
@@ -629,8 +628,14 @@ func _try_interact() -> void:
 	# Proximity check for buggy — no need to aim at it.
 	var nearby_v := _find_nearby_vehicle()
 	if nearby_v != null:
-		# Pick whichever seat is free; driver seat first, passenger if taken.
-		var seat := 0 if nearby_v.get("driver_peer_id") == -1 else 1
+		# Pick the first free seat: driver → front passenger → rear-left → rear-right.
+		var seat := -1
+		if   nearby_v.get("driver_peer_id")    == -1: seat = 0
+		elif nearby_v.get("passenger_peer_id") == -1: seat = 1
+		elif nearby_v.get("passenger2_peer_id") == -1: seat = 2
+		elif nearby_v.get("passenger3_peer_id") == -1: seat = 3
+		if seat < 0:
+			return
 		if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 			nearby_v.rpc_id(1, "request_enter", seat)
 		else:
@@ -758,9 +763,12 @@ func _update_interact_prompt() -> void:
 	# Proximity check for buggy (no aim required).
 	var nearby_v := _find_nearby_vehicle()
 	if nearby_v != null:
-		var driver_free    : bool = nearby_v.get("driver_peer_id")    == -1
-		var passenger_free : bool = nearby_v.get("passenger_peer_id") == -1
-		if driver_free or passenger_free:
+		var driver_free : bool = nearby_v.get("driver_peer_id") == -1
+		var any_free    : bool = driver_free \
+			or nearby_v.get("passenger_peer_id")  == -1 \
+			or nearby_v.get("passenger2_peer_id") == -1 \
+			or nearby_v.get("passenger3_peer_id") == -1
+		if any_free:
 			interact_prompt.visible = true
 			interact_prompt.text = "[E] Drive buggy" if driver_free else "[E] Ride as passenger"
 		return

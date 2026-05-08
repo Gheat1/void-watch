@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://coglh35euqvt8"]
 
 [ext_resource type="Script" uid="uid://df0kr8t8qjgny" path="res://scripts/gun.gd" id="1_gun"]
-[ext_resource type="PackedScene" uid="uid://bxekdxrlox4wn" path="res://VoidRifle.glb" id="2_rifle"]
+[ext_resource type="PackedScene" uid="uid://bxekdxrlox4wn" path="res://assets/models/VoidRifle.glb" id="2_rifle"]
 
 [sub_resource type="SphereMesh" id="Flash_mesh"]
 radius = 0.08

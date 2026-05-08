@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cv5kisc1xyj0"
-path="res://.godot/imported/VoidRifle.glb-eff27522abc839a931462e0b8ea7f97e.scn"
+uid="uid://c38p8b4h78iha"
+path="res://.godot/imported/VoidHammer.glb-fb432d7d3a3ee8a92c90fa0435f1014a.scn"
 
 [deps]
 
-source_file="res://VoidRifle.glb"
-dest_files=["res://.godot/imported/VoidRifle.glb-eff27522abc839a931462e0b8ea7f97e.scn"]
+source_file="res://assets/models/VoidHammer.glb"
+dest_files=["res://.godot/imported/VoidHammer.glb-fb432d7d3a3ee8a92c90fa0435f1014a.scn"]
 
 [params]
 
